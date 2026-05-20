@@ -21,6 +21,74 @@ Podden försöker utifrån gamla citat med mera gissa sig fram till vad som kan
 * [Foss-North](https://foss-north.se/),
   27-28 april 2026, Chalmers.
 
+## Feedback: Bybit hacket
+
+Johan Lindberg, Säkerhet, Ethereum Foundation
+  hörde av sig i April med lite förtydlingar,
+  efter att lyssnat på avsnittet:
+
+### Den enkla formuleringen till podden, jämför med BankID
+
+> Föreställ er att BankID visade “Godkänn transaktion: 3a7f9c…d82b” istället för
+> “Betala 149 kr till Spotify”. Ni skulle trycka godkänn ändå, för ni litar på bankens
+> webbsida som säger att det är lugnt? Det är precis det Bybits signatärer gjorde –
+> och det är varför det inte spelade någon roll att de var tre stycken. Alla tre
+> granskade webbsidans lögn, inte sanningen i hårdvaruplånboken.
+
+### En övergipande förklaring av osäkra blind signering flödet
+
+> De som skulle signera satt vid sina datorer och öppnade Safe{Wallet}s webbgränssnitt i
+> sin webbläsare.  Webbläsaren hämtade JavaScript från app.safe.global och renderade en
+> sida som visade: “Flytta X ETH från “cold wallet adress” till “hot wallet adress” – allt såg legitimt ut.
+>
+> Sedan kopplade de in sin Ledger hårdvaruplånbok. Webbsidan skickade då ett EIP–712-
+> meddelande till Ledgern för signering. Och här är det kritiska problemet: Ledgern kan
+> inte avkoda och visa EIP–712-meddelandets faktiska innehåll i läsbar form när det
+> innehåller nestade operationer som delegatecall.
+>
+> Vad Ledgern visade på sin lilla skärm var i praktiken ett kryptografiskt hash
+> – en lång teckensträng –
+> inte transaktionens faktiska innebörd.
+>
+> Alla tre tryckte godkänn på Ledgern baserat på vad webbsidan visade, inte vad
+> Ledgern visade. Det är blind signing.
+
+> Hade de faktiskt granskat vad Ledgern visade hade de sett att hashen inte stämde med
+> en normal överföring. De hade troligtvis inte kunnat läsa sig till exakt vad som skulle
+> ske – men de hade sett att något var fel.
+
+### Läsbar signering, transparent signering (Clear signing) flöden
+
+> Det finns något som kallas clear signing som alla hårdvaruplånböcker försöker
+> implementera på ett eller annat sätt – principen att det du ser på enhetens skärm
+> bokstavligen är det du signerar, utan att behöva lita på webbsidan däremellan.
+
+### Vad är en hårdvaruplånbok – och varför spelar det roll?
+
+> En hårdvaruplånbok är en fysisk enhet – ungefär som ett USB-minne – vars
+> enda uppgift är att skydda din privata nyckel. Den privata nyckeln
+> är det som bevisar äganderätt till kryptotillgångar: den som kontrollerar
+> nyckeln kontrollerar pengarna, oavsett vad som står någon annanstans.
+> Nyckeln lämnar aldrig hårdvaruplånboken, vilket innebär att en angripare
+> som tar sig in på din dator eller i din e-post ändå inte kan komma åt den.
+> De vanligaste enheterna är Trezor och Ledger – båda väletablerade, men med
+> olika designfilosofier kring öppenhet och säkerhet.
+
+### Multisig – när en nyckel inte räcker
+
+> För tillgångar av högre värde används ofta multisignatur (multisig),
+> vilket innebär att en transaktion kräver godkännande från flera nycklar.
+> Upplägget beskrivs som M-av-N – t.ex.:
+>
+> * 3-av-5: Fem nycklar existerar, varav tre måste signera.
+>   Ger redundans (du kan tappa två nycklar utan att förlora åtkomst)
+>   och skydd mot kompromiss (en angripare som tar sig in på en enhet
+>   kan inte agera ensam).
+> * 7-av-10: Används för mycket höga värden eller organisationer med fler
+>   intressenter. Kräver bred konsensus, vilket gör obehörig åtkomst ännu svårare
+>    – men ställer också högre krav på koordination
+
+
 ## AI transkribering
 
 _AI försöker förstå oss... Ha överseende med galna feltranskriberingar._
