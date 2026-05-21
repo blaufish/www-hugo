@@ -206,6 +206,109 @@ eu-digital-identity-wallet uppdatering
 >   hash with reasonable brute-force resistance against a 2026 threat model.
 
 
+## Feedback
+
+**Thomas** hörde av sig:
+
+> Lyssnade på avsnittet om åldersverifiering.
+>
+> Funderar lite och borde man inte kunna sätta upp det såhär:
+>
+> Hemsidor pratat bara med appen. De ger en sträng som måste
+> komma tillbaka signerad av rätt auktoritet. Appen tar strängen
+> och får den signerad och ger den till hemsidan. Förutsatt att
+> strängen inte läcker data så borde väl nu inte auktorieteten
+> få reda på vilken hemsida det är?
+
+Knåpade ihop detta svar:
+
+
+> Mmm, Din design ide är inte helt kass.
+>
+> Oavsiktliga läckage: Som du beskriver den så skulle dock
+> ”cornhub-123456” läcka mellan Rp relying party och
+> autentisering backend. Men man skulle kunna blinda detta
+> på lite olika sätt, typ
+
+``` plain
+SHA256(
+  concat(
+    SHA256(app-nonce),
+    SHA256(domännamn),
+    SHA256(sträng-från-sajten)
+  )
+)
+```
+
+> och sen ge sajten vad den behöver för att verifiera ens åldersbevis rör deras challenge.
+>
+> Missbruk: Din modell förhindrar inte missbruk, t.ex. att tusentals
+>   enheter delar ett och samma åldersbevis.
+>
+> Om du kollar i FIDO spec:ar finns mer seriöst vad de tänkt på och
+>   vilka delar av FIDO lösningen som skall skydda mot vad. Det är
+>   nog det mest väldokumenterade, genomtänkta autentiseringsramverket
+>   med massvis med olika privacy-avvägningar gjorda. De har en bunt
+>   designade motmedel mot oavsiktliga läckage.
+>
+> Det är mycket som hamnar i ”vad är vår hotmodell”. \
+> T.ex. litar vi på att appen gör vad den skall? \
+> T.ex. litar vi på att auth-backend och relying party
+>   inte samarbetar för att korrelera vem man är.
+>   Säg t.ex. att rp och auth-backend anser att ett
+>   åldersbevis är inblandat i ett brott, kommer de
+>   då samarbeta för spåra vilket ID som begick ett brott?
+>
+> Appen behöver egentligen inte prata med autentiseringsbackend.
+> Behöver inte finnas någon kontakt mellan Rp relying party och
+>   Auth-infran utöver t.ex.
+> - vilka signing keys som är betrodda
+> - eventuella blacklist som gäller
+>
+> EU’s lösning skall funka typ så.
+>
+> Det intressanta är vilken modell man väljer och vad den skall skydda mot.
+>
+> Vi spelade ju in före Paul Moore’s analys, han påvisade precis den typen
+>   av attack mot EUs nuvarande lösning.
+> Problembilden är att privacy preserving ligger i konflikt med andra mål.
+>
+> Om man vill skydda detta ”på riktigt” kommer man t.ex. vilja förhindra att åldersbevis:
+> - är giltiga mer än X tid
+> - kopieras mellan olika enheter
+> - användas mer än X gånger
+> - används i ej godkänd mjukvara
+>
+> Den senaste releasen de gjorde nyss gör ett antal saker för att förhindra att
+>  appen kan starta i jailbreak’ade telefoner.
+> (Se t.ex. FIDO / passkeys som är äldre och mer moget, för en del tillämpningar -
+>   bank m.m. - tillåter man bara betrodda signerade enheter)
+>
+> Så frågan är hur man balanserar äkthet på åldersbeviset med
+>   privacy/integritetsskydd. Skall man ha full äkthet vill man att backend
+>   skall se allt och bara låta ens egen app få lov att jobba med lösningen.
+> Vill man ha full privacy preserving gör man så lite inskränkning som
+>   möjligt och så lite insyn som möjligt.
+>
+> Det vore inte orimligt att man på sikt skulle vilja ha en helt annan
+>  lösning än det man har idag… vill rulla ut en rätt annorlunda
+>  version 2 som är mer robust mot attacker; ergo mindre privacy fokuserad.
+>
+> Jag har en stark misstanke om att Paul Moore’s chrome extension inte
+>   kommer tillåtas publicering, att EU kommer bli jättesura på alla som
+>   gör konkurrerande appar där de saknar kontroll/insyn.
+> EU har redan börjat prata om att förbjuda VPN som ett sätt att stoppa
+>   att lagen kringgås.
+>
+> Så allt är teknisk lösbart det är bara frågan om vilken hotmodell man
+>   väljer, vad man litar på, vem man litar på.
+>
+> EFF m.fl. har en del andra invändningar som inte är lika
+>   teknik/ säkerhet/ privacy orienterade.
+> Tillgänglighet för funktionshindrade, papperslösa, HBTQ+, färgade.
+>
+> Typ så, tillit, privacy och tillgänglighet i en go röra :)
+
 ## AI transkribering
 
 _AI försöker förstå oss... Ha överseende med galna feltranskriberingar._
